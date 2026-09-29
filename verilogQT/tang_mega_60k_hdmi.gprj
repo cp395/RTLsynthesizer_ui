@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <!-- UNCONFIRMED CANDIDATE ONLY: this GW5AT entry is retained so the Gowin
+         IDE can open the project and remains consistent with the historical
+         project target.  It is not evidence that the user's board has this
+         device/package.  Before any GUI build, manually confirm or replace
+         the device/package, PLL IP, oscillator, HDMI architecture, and every
+         pin/IO-bank constraint from the board schematic.  board_config.tcl
+         still rejects automated builds until those values are confirmed. -->
+    <Device name="GW5AT-60" pn="GW5AT-LV60PG484A">gw5at60k-011</Device>
+    <FileList>
+        <File path="rtl/top_hdmi_tang_mega_60k.v" type="file.verilog" enable="1"/>
+        <File path="rtl/Gowin_rPLL.v" type="file.verilog" enable="1"/>
+        <File path="rtl/hdmi_timing.v" type="file.verilog" enable="1"/>
+        <File path="rtl/adv7513_controller.v" type="file.verilog" enable="1"/>
+        <File path="rtl/ui_event_cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/ui_interaction.v" type="file.verilog" enable="1"/>
+        <File path="rtl/panel_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/bar_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/spectrum_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/waveform_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/keyboard_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/knob_renderer.v" type="file.verilog" enable="1"/>
+        <File path="rtl/ui_top.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pixel_renderer.v" type="file.verilog" enable="1"/>
+        <File path="constraints/tang_mega_60k_hdmi.cst" type="file.cst" enable="1"/>
+    </FileList>
+</Project>

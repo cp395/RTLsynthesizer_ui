@@ -1,0 +1,31 @@
+//Copyright (C)2014-2024 Gowin Semiconductor Corporation.
+//Tang Mega 60K LED 测试约束文件
+//使用实际存在的 PBGA484A 封装引脚
+
+//==============================================================
+// 时钟 - 使用 Bank 6 的 IO 引脚作为时钟输入
+//==============================================================
+IO_LOC "clk_27mhz" AA1;
+IO_PORT "clk_27mhz" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+//==============================================================
+// 复位按钮 - 使用 Bank 2 的 IO 引脚
+//==============================================================
+IO_LOC "key_reset_n" A13;
+IO_PORT "key_reset_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+//==============================================================
+// LED - 6 个 LED，全部使用 Bank 2 (支持 3.3V)
+//==============================================================
+IO_LOC "led[0]" A14;
+IO_LOC "led[1]" A15;
+IO_LOC "led[2]" A16;
+IO_LOC "led[3]" A18;
+IO_LOC "led[4]" A19;
+IO_LOC "led[5]" A20;
+IO_PORT "led[0]" IO_TYPE=LVCMOS33;
+IO_PORT "led[1]" IO_TYPE=LVCMOS33;
+IO_PORT "led[2]" IO_TYPE=LVCMOS33;
+IO_PORT "led[3]" IO_TYPE=LVCMOS33;
+IO_PORT "led[4]" IO_TYPE=LVCMOS33;
+IO_PORT "led[5]" IO_TYPE=LVCMOS33;
