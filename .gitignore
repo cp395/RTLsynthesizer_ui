@@ -1,0 +1,52 @@
+# Gowin generated implementation data
+impl/
+*.gprj.user
+*.log
+
+# Editor and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python or temporary caches accidentally created beside the FPGA project
+__pycache__/
+*.py[cod]
+*.tmp
+*.bak
+*.out
+
+# Board-verified release files under release/ are intentionally tracked.
+
+# Legacy/reference files kept locally but excluded from the board-verified baseline.
+/HARDWARE_INFO_NEEDED.md
+/HARDWARE_VERIFICATION_GUIDE.md
+/assets/
+/board_config.tcl
+/build.tcl
+/build_led_test.tcl
+/build_simple.tcl
+/docs/
+/testbench/
+/constraints/tang_mega_60k_hdmi.cst
+/constraints/tang_mega_60k_led_test.cst
+/constraints/tang_mega_60k_simple.cst
+/rtl/Gowin_rPLL.v
+/rtl/adv7513_controller.v
+/rtl/bar_renderer.v
+/rtl/dvi_tx/
+/rtl/hdmi_timing.v
+/rtl/keyboard_renderer.v
+/rtl/knob_renderer.v
+/rtl/panel_renderer.v
+/rtl/pixel_renderer.v
+/rtl/spectrum_renderer.v
+/rtl/top_hdmi_tang_mega_60k.v
+/rtl/top_led_test.v
+/rtl/top_mega_60k_simple.v
+/rtl/ui_config.vh
+/rtl/ui_event_cdc.v
+/rtl/ui_event_guard.v
+/rtl/ui_interaction.v
+/rtl/ui_top.v
+/rtl/waveform_renderer.v
