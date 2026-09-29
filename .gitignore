@@ -18,7 +18,7 @@ __pycache__/
 
 # Board-verified release files under release/ are intentionally tracked.
 
-# Legacy/reference files kept locally but excluded from the board-verified baseline.
+# Obsolete legacy-project paths are intentionally excluded from this baseline.
 /HARDWARE_INFO_NEEDED.md
 /HARDWARE_VERIFICATION_GUIDE.md
 /assets/
