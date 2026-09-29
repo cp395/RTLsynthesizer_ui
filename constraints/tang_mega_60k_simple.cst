@@ -1,0 +1,106 @@
+//Copyright (C)2014-2024 Gowin Semiconductor Corporation.
+//All rights reserved.
+//Tang Mega 60K 简化约束文件
+//仅包含时钟和 LED 用于测试
+
+//==============================================================
+// 时钟 - 27 MHz 晶振
+//==============================================================
+IO_LOC "clk_27mhz" H11;
+IO_PORT "clk_27mhz" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+//==============================================================
+// 复位按钮 - KEY1 (active low)
+//==============================================================
+IO_LOC "key_reset_n" T10;
+IO_PORT "key_reset_n" IO_TYPE=LVCMOS18 PULL_MODE=UP;
+
+//==============================================================
+// LED - 6 个 LED
+//==============================================================
+IO_LOC "led[0]" E22;
+IO_LOC "led[1]" F21;
+IO_LOC "led[2]" G21;
+IO_LOC "led[3]" H21;
+IO_LOC "led[4]" G22;
+IO_LOC "led[5]" H22;
+IO_PORT "led[0]" IO_TYPE=LVCMOS33;
+IO_PORT "led[1]" IO_TYPE=LVCMOS33;
+IO_PORT "led[2]" IO_TYPE=LVCMOS33;
+IO_PORT "led[3]" IO_TYPE=LVCMOS33;
+IO_PORT "led[4]" IO_TYPE=LVCMOS33;
+IO_PORT "led[5]" IO_TYPE=LVCMOS33;
+
+//==============================================================
+// HDMI 输出到 ADV7513
+//==============================================================
+// 像素时钟
+IO_LOC "hdmi_clk" P18;
+IO_PORT "hdmi_clk" IO_TYPE=LVCMOS33 DRIVE=8;
+
+// RGB 数据 - 24 位
+IO_LOC "hdmi_d[0]" U20;
+IO_LOC "hdmi_d[1]" U22;
+IO_LOC "hdmi_d[2]" V20;
+IO_LOC "hdmi_d[3]" W20;
+IO_LOC "hdmi_d[4]" AA22;
+IO_LOC "hdmi_d[5]" AB22;
+IO_LOC "hdmi_d[6]" AB21;
+IO_LOC "hdmi_d[7]" AB20;
+
+IO_LOC "hdmi_d[8]" Y22;
+IO_LOC "hdmi_d[9]" Y21;
+IO_LOC "hdmi_d[10]" Y20;
+IO_LOC "hdmi_d[11]" AA20;
+IO_LOC "hdmi_d[12]" AA12;
+IO_LOC "hdmi_d[13]" V22;
+IO_LOC "hdmi_d[14]" W22;
+IO_LOC "hdmi_d[15]" W21;
+
+IO_LOC "hdmi_d[16]" V21;
+IO_LOC "hdmi_d[17]" U21;
+IO_LOC "hdmi_d[18]" T22;
+IO_LOC "hdmi_d[19]" T21;
+IO_LOC "hdmi_d[20]" W13;
+IO_LOC "hdmi_d[21]" R22;
+IO_LOC "hdmi_d[22]" R21;
+IO_LOC "hdmi_d[23]" P22;
+
+IO_PORT "hdmi_d[0]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[1]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[2]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[3]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[4]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[5]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[6]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[7]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[8]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[9]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[10]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[11]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[12]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[13]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[14]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[15]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[16]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[17]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[18]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[19]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[20]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[21]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[22]" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_d[23]" IO_TYPE=LVCMOS33 DRIVE=8;
+
+// HSYNC, VSYNC, DE
+IO_LOC "hdmi_hsync" AA7;
+IO_LOC "hdmi_vsync" Y10;
+IO_LOC "hdmi_de" R19;
+IO_PORT "hdmi_hsync" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_vsync" IO_TYPE=LVCMOS33 DRIVE=8;
+IO_PORT "hdmi_de" IO_TYPE=LVCMOS33 DRIVE=8;
+
+// I2C (用于配置 ADV7513)
+IO_LOC "hdmi_scl" N19;
+IO_LOC "hdmi_sda" N20;
+IO_PORT "hdmi_scl" IO_TYPE=LVCMOS33 OPEN_DRAIN=ON PULL_MODE=UP;
+IO_PORT "hdmi_sda" IO_TYPE=LVCMOS33 OPEN_DRAIN=ON PULL_MODE=UP;

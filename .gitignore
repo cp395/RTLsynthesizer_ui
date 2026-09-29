@@ -1,0 +1,20 @@
+# Python environments and caches
+.venv/
+.venv_legacy/
+__pycache__/
+*.py[cod]
+
+# IDE and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Generated examples and local render output
+examples/generated_rtl/
+test_output.png
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak

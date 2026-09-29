@@ -1,0 +1,196 @@
+# EXAMPLE ONLY: Tang Mega 60K HDMI Constraints File
+# No IO_LOC in this file has been confirmed against the user's board revision.
+# Do not set BOARD_CONFIG_CONFIRMED=1 until every assignment and IO bank
+# voltage has been verified against the actual schematic.
+#
+# NOTE: Pin assignments must be verified against your board schematic
+# Tang Mega 60K documentation: https://wiki.sipeed.com/hardware/en/tang/tang-mega-60k/
+
+# ========================================
+# Clock and Reset
+# ========================================
+
+# Example assumption: 50 MHz onboard oscillator. Confirm board revision first.
+IO_LOC "clk_50mhz" H11;
+IO_PORT "clk_50mhz" PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+# Reset button (active low)
+IO_LOC "key_reset_n" T10;
+IO_PORT "key_reset_n" PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+# ========================================
+# LED Debug Outputs
+# ========================================
+
+IO_LOC "led[0]" L14;
+IO_LOC "led[1]" L15;
+IO_LOC "led[2]" L16;
+IO_LOC "led[3]" M15;
+IO_LOC "led[4]" M16;
+IO_LOC "led[5]" N14;
+IO_LOC "led[6]" N15;
+IO_LOC "led[7]" N16;
+
+IO_PORT "led[0]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[1]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[2]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[3]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[4]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[5]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[6]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "led[7]" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33;
+
+# ========================================
+# HDMI Interface (to ADV7513 or similar)
+# ========================================
+# NOTE: These are EXAMPLE pins for Tang Mega 60K
+# Verify against your specific board schematic!
+# The Tang Mega 60K typically uses a HDMI transmitter chip
+# Check the actual pins from the board documentation at:
+# https://wiki.sipeed.com/hardware/en/tang/tang-mega-60k/mega-60k.html
+
+# UI event input pins are intentionally absent.  Add event_clk, event_valid,
+# event_type[3:0], event_id[7:0], and event_value[15:0] only after selecting a
+# real UART/USB/soft-core adapter and verifying its board pins.
+
+# Pixel clock output
+IO_LOC "hdmi_clk" AA4;
+IO_PORT "hdmi_clk" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+
+# RGB Data [23:0] - 24-bit RGB888
+# Red channel [23:16]
+IO_LOC "hdmi_d[23]" AB5;
+IO_LOC "hdmi_d[22]" AB6;
+IO_LOC "hdmi_d[21]" AB7;
+IO_LOC "hdmi_d[20]" AB8;
+IO_LOC "hdmi_d[19]" AC8;
+IO_LOC "hdmi_d[18]" AC7;
+IO_LOC "hdmi_d[17]" AC6;
+IO_LOC "hdmi_d[16]" AC5;
+
+# Green channel [15:8]
+IO_LOC "hdmi_d[15]" AD8;
+IO_LOC "hdmi_d[14]" AD7;
+IO_LOC "hdmi_d[13]" AD6;
+IO_LOC "hdmi_d[12]" AD5;
+IO_LOC "hdmi_d[11]" AE8;
+IO_LOC "hdmi_d[10]" AE7;
+IO_LOC "hdmi_d[9]" AE6;
+IO_LOC "hdmi_d[8]" AE5;
+
+# Blue channel [7:0]
+IO_LOC "hdmi_d[7]" AF8;
+IO_LOC "hdmi_d[6]" AF7;
+IO_LOC "hdmi_d[5]" AF6;
+IO_LOC "hdmi_d[4]" AF5;
+IO_LOC "hdmi_d[3]" AG8;
+IO_LOC "hdmi_d[2]" AG7;
+IO_LOC "hdmi_d[1]" AG6;
+IO_LOC "hdmi_d[0]" AG5;
+
+# Sync signals
+IO_LOC "hdmi_vsync" Y4;
+IO_LOC "hdmi_hsync" AA5;
+IO_LOC "hdmi_de" AB4;
+
+# I2C Interface for HDMI chip configuration
+IO_LOC "hdmi_scl" W4;
+IO_LOC "hdmi_sda" W5;
+
+# ========================================
+# Electrical characteristics
+# ========================================
+
+# RGB data pins
+IO_PORT "hdmi_d[23]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[22]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[21]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[20]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[19]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[18]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[17]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[16]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_PORT "hdmi_d[15]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[14]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[13]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[12]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[11]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[10]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[9]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[8]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_PORT "hdmi_d[7]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[6]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[5]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[4]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[3]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[2]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[1]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_d[0]" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+
+# Sync signals
+IO_PORT "hdmi_vsync" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_hsync" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+IO_PORT "hdmi_de" PULL_MODE=NONE DRIVE=8 IO_TYPE=LVCMOS33;
+
+# I2C pins - open drain with pull-ups
+IO_PORT "hdmi_scl" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33 OPEN_DRAIN=ON;
+IO_PORT "hdmi_sda" PULL_MODE=UP DRIVE=8 IO_TYPE=LVCMOS33 OPEN_DRAIN=ON;
+
+# ========================================
+# Timing Constraints
+# ========================================
+
+# Input clock: 50 MHz
+create_clock -name clk_50mhz -period 20.000 -waveform {0 10.000} [get_ports {clk_50mhz}]
+
+# PLL generated clock: 74.25 MHz for 720p60
+# Actual frequency depends on PLL configuration
+create_generated_clock -name clk_pixel -source [get_ports {clk_50mhz}] -master_clock clk_50mhz -multiply_by 1485 -divide_by 1000 [get_nets {clk_pixel}]
+
+# Output delay constraints for HDMI data relative to pixel clock
+set_output_delay -clock clk_pixel -max 2.0 [get_ports {hdmi_d[*]}]
+set_output_delay -clock clk_pixel -min -0.5 [get_ports {hdmi_d[*]}]
+set_output_delay -clock clk_pixel -max 2.0 [get_ports {hdmi_vsync hdmi_hsync hdmi_de}]
+set_output_delay -clock clk_pixel -min -0.5 [get_ports {hdmi_vsync hdmi_hsync hdmi_de}]
+
+# I2C is low speed (the current controller is about 66.7 kHz), set as false paths
+set_false_path -from [get_ports {hdmi_scl}]
+set_false_path -to [get_ports {hdmi_scl}]
+set_false_path -from [get_ports {hdmi_sda}]
+set_false_path -to [get_ports {hdmi_sda}]
+
+# ========================================
+# IMPORTANT NOTES
+# ========================================
+#
+# 1. PIN VERIFICATION REQUIRED:
+#    The HDMI pin assignments above are EXAMPLES and may not match your board.
+#    You MUST verify the actual pins from your board schematic or documentation.
+#
+# 2. How to find the correct pins:
+#    a) Visit: https://wiki.sipeed.com/hardware/en/tang/tang-mega-60k/
+#    b) Download the schematic PDF
+#    c) Find the HDMI transmitter chip connections
+#    d) Update the IO_LOC lines with the correct pin names
+#
+# 3. Clock frequency:
+#    - Tang Mega 60K typically has a 50 MHz oscillator, not 27 MHz
+#    - You may need to adjust the PLL configuration in Gowin_rPLL.v
+#    - Update the create_clock constraint to match your oscillator
+#
+# 4. HDMI chip identification:
+#    - Check which HDMI transmitter chip your board uses
+#    - Common chips: ADV7513, IT6613, ANX9134, MS9332
+#    - Verify the I2C address in adv7513_controller.v matches your chip
+#
+# 5. Testing procedure:
+#    a) First test with LEDs only (comment out HDMI pins if unsure)
+#    b) Verify PLL lock and system reset via LEDs
+#    c) Then add HDMI pins after verification
+#
+# 6. If you get place & route errors:
+#    - Check that pin names match your FPGA package (PG484A vs others)
+#    - Verify IO bank voltages are compatible (3.3V for LVCMOS33)
+#    - Check that you're not using configuration pins
