@@ -1,0 +1,16 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW5AT-60B" pn="GW5AT-LV60PG484AC1/I0">gw5at60b-002</Device>
+    <FileList>
+        <File path="rtl/top_tmds_60k.v" type="file.verilog" enable="1"/>
+        <File path="rtl/ui_generated_scene.v" type="file.verilog" enable="1"/>
+        <File path="rtl/video_timing_ctrl.v" type="file.verilog" enable="1"/>
+        <File path="rtl/TMDS_PLL.v" type="file.verilog" enable="1"/>
+        <File path="rtl/DVI_TX_Top.v" type="file.verilog" enable="1"/>
+        <File path="constraints/tang_mega_60k_tmds.cst" type="file.cst" enable="1"/>
+        <File path="constraints/tang_mega_60k_tmds.sdc" type="file.sdc" enable="1"/>
+    </FileList>
+</Project>
