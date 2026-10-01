@@ -84,7 +84,7 @@ class RTLGenerator:
             "interface": {
                 "fft_bins_flat_bits": 1024,
                 "ui_state_flat_bits": 512,
-                "pcm_buffer_flat_bits": 1024,
+                "pcm_buffer_flat_bits": 2048,
                 "key_states_bits": 88,
                 "event": {
                     "valid_bits": 1,
@@ -693,7 +693,7 @@ class RTLGenerator:
         code.append("    // 数据输入 - 扁平化接口")
         code.append("    input wire [1023:0] fft_bins_flat,    // 128 bins * 8 bits")
         code.append("    input wire [511:0] ui_state_flat,     // 32 registers * 16 bits")
-        code.append("    input wire [1023:0] pcm_buffer_flat,  // 128 samples * signed 8 bits")
+        code.append("    input wire [2047:0] pcm_buffer_flat,  // 128 samples * signed 16 bits")
         code.append("    input wire [87:0] key_states,         // 88 keys max")
         code.append("    ")
         code.append("    // RGB 输出")
@@ -833,7 +833,7 @@ class RTLGenerator:
         code.append("    // UI State - flattened arrays")
         code.append("    input wire [1023:0] fft_bins_flat,    // 128 * 8 bits")
         code.append("    input wire [511:0] ui_state_flat,     // 32 * 16 bits")
-        code.append("    input wire [1023:0] pcm_buffer_flat,  // 128 * signed 8 bits")
+        code.append("    input wire [2047:0] pcm_buffer_flat,  // 128 * signed 16 bits")
         code.append("    input wire [87:0] key_states,")
         code.append("")
         code.append("    // RGB Output")

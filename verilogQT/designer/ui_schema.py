@@ -16,7 +16,9 @@ FFT_BIN_BITS = 8
 FFT_BIN_MIN = 0
 FFT_BIN_MAX = (1 << FFT_BIN_BITS) - 1
 PCM_SAMPLE_COUNT = 128
-PCM_SAMPLE_BITS = 8
+# Keep the compact display buffer at 128 points, but retain the signed 16-bit
+# PCM sample contract so upstream audio does not lose dynamic range.
+PCM_SAMPLE_BITS = 16
 PCM_SAMPLE_MIN = -(1 << (PCM_SAMPLE_BITS - 1))
 PCM_SAMPLE_MAX = (1 << (PCM_SAMPLE_BITS - 1)) - 1
 

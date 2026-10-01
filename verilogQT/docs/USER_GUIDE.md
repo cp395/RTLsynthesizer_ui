@@ -327,18 +327,19 @@ end
 
 **数据格式：**
 ```verilog
-// UI 输入是最近 128 个有符号 8 位显示采样点
-reg signed [7:0] pcm_buffer [0:127];
+// UI 输入是最近 128 个有符号 16 位显示采样点
+reg signed [15:0] pcm_buffer [0:127];
 ```
 
 **RTL 实现：**
 ```verilog
 // 根据 x 坐标查询 128 点缓冲区中的采样值
 wire [6:0] sample_index = (pixel_x - X_START) * 128 / WIDTH;
-wire signed [7:0] sample = pcm_buffer[sample_index];
+wire signed [15:0] sample = pcm_buffer[sample_index];
 
 // 转换为 y 坐标
-wire [9:0] wave_y = CENTER_Y - (sample >>> 1);
+wire signed [31:0] sample_scaled = sample * HALF_HEIGHT;
+wire [9:0] wave_y = CENTER_Y - (sample_scaled >>> 15);
 
 // 判断当前像素
 wire on_wave = (pixel_y >= wave_y - 1) && 
@@ -446,7 +447,7 @@ module ui_top (
     input wire [9:0] pixel_y,
     input wire [1023:0] fft_bins_flat,    // 128 bins * 8 bits
     input wire [511:0] ui_state_flat,     // 32 registers * 16 bits
-    input wire [1023:0] pcm_buffer_flat,  // 128 signed 8-bit samples
+    input wire [2047:0] pcm_buffer_flat,  // 128 signed 16-bit samples
     input wire [87:0] key_states,
     output wire [7:0] rgb_r,
     output wire [7:0] rgb_g,
@@ -481,10 +482,10 @@ module fpga_synth_top (
     
     // 你的音频合成引擎
     // 由合成引擎内部的降采样/定标逻辑驱动，供 UI 显示使用
-    wire signed [7:0] pcm_samples [0:127];
+    wire signed [15:0] pcm_samples [0:127];
     wire [7:0] fft_bins [0:127];
     wire [1023:0] fft_bins_flat;
-    wire [1023:0] pcm_buffer_flat;
+    wire [2047:0] pcm_buffer_flat;
 
     genvar fft_i;
     generate
@@ -497,7 +498,7 @@ module fpga_synth_top (
     genvar pcm_i;
     generate
         for (pcm_i = 0; pcm_i < 128; pcm_i = pcm_i + 1) begin : gen_pcm_flat
-            assign pcm_buffer_flat[pcm_i*8 +: 8] = pcm_samples[pcm_i];
+            assign pcm_buffer_flat[pcm_i*16 +: 16] = pcm_samples[pcm_i];
         end
     endgenerate
     

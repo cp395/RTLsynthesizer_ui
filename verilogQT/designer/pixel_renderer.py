@@ -323,7 +323,7 @@ class PixelRenderer:
         pixel_last = max(1, num_samples - 1)
 
         for i in range(num_samples - 1):
-            # PCM 数据是有符号 8 位样本（-128..127）。
+            # PCM 数据是有符号 16 位样本（-32768..32767）。
             source_i = min(source_last, (i * source_last) // pixel_last)
             source_next = min(source_last, ((i + 1) * source_last) // pixel_last)
             sample1 = max(PCM_SAMPLE_MIN, min(PCM_SAMPLE_MAX,
@@ -332,8 +332,8 @@ class PixelRenderer:
                                               pcm_data[source_next]))
 
             # 转换为屏幕坐标
-            y_sample1 = center_y - (sample1 * half_height) // 128
-            y_sample2 = center_y - (sample2 * half_height) // 128
+            y_sample1 = center_y - (sample1 * half_height) // (PCM_SAMPLE_MAX + 1)
+            y_sample2 = center_y - (sample2 * half_height) // (PCM_SAMPLE_MAX + 1)
 
             # 裁剪
             y_sample1 = max(y1, min(y2 - 1, y_sample1))

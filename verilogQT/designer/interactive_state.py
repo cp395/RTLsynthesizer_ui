@@ -43,7 +43,7 @@ class InteractiveState:
         # 频谱数据（128 个 8 位 bins，用于 FFT 可视化）
         self.fft_bins = [0] * FFT_BIN_COUNT
 
-        # 波形数据（128 个有符号 8 位采样点，用于示波器）
+        # 波形数据（128 个有符号 16 位采样点，用于示波器）
         self.pcm_buffer = [0] * PCM_SAMPLE_COUNT
 
         # 动画计数器
@@ -172,8 +172,8 @@ class InteractiveState:
         # 模拟波形（正弦波 + 谐波）
         self.pcm_buffer = [
             max(PCM_SAMPLE_MIN, min(PCM_SAMPLE_MAX, int(
-                96 * np.sin(i * 0.02 + t) +
-                24 * np.sin(i * 0.06 + t * 1.5)
+                15000 * np.sin(i * 0.02 + t) +
+                5000 * np.sin(i * 0.06 + t * 1.5)
             )))
             for i in range(PCM_SAMPLE_COUNT)
         ]

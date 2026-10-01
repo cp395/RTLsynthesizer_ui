@@ -43,7 +43,7 @@ def generate_test_frame():
 
         # PCM waveform - 模拟正弦波
         "pcm_buffer": [
-            int(100 * np.sin(i * 0.02)) for i in range(128)
+            int(16000 * np.sin(i * 0.02)) for i in range(128)
         ],
 
         # Keyboard states - 假设按下 C4, E4, G4

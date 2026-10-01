@@ -223,8 +223,8 @@ input wire [511:0] ui_state_flat;   // 32 registers * 16 bits
 
 #### PCM 波形（新增）
 ```verilog
-input wire [1023:0] pcm_buffer_flat;  // 128 samples * signed 8 bits
-// 值范围: -128 到 +127（二进制补码）
+input wire [2047:0] pcm_buffer_flat;  // 128 samples * signed 16 bits
+// 值范围: -32768 到 +32767（二进制补码）
 ```
 
 FFT 显示接口为 128 个 8 位幅值（`fft_bins_flat[1023:0]`）。更高精度或更长帧的处理属于音频引擎内部；送入 UI 前应整理为这组显示数据。

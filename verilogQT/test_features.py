@@ -155,7 +155,7 @@ def test_renderer():
 
         scene.widgets.append(WaveformWidget(
             type="waveform", name="waveform", x=50, y=250, width=500, height=100,
-            samples=512, line_color=ColorRGB(110, 231, 183), bg_color=ColorRGB(10, 13, 18)
+            samples=128, line_color=ColorRGB(110, 231, 183), bg_color=ColorRGB(10, 13, 18)
         ))
 
         scene.widgets.append(KeyboardWidget(
@@ -177,7 +177,7 @@ def test_renderer():
         ui_state = {
             "fft_bins": [int(128 + 100 * np.sin(i * 0.2)) for i in range(128)],
             "ui_state": [40000, 50000] + [32768] * 30,
-            "pcm_buffer": [int(120 * np.sin(2 * np.pi * i / 50)) for i in range(128)],
+            "pcm_buffer": [int(16000 * np.sin(2 * np.pi * i / 50)) for i in range(128)],
             "key_states": [True, False, True, False, False] + [False] * 20,
         }
 

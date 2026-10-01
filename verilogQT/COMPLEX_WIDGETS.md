@@ -19,7 +19,7 @@
 - **Python 渲染**: ✅ 完整实现
 - **RTL 模块**: ✅ `rtl/waveform_renderer.v`
 - **特性**: 
-  - 支持 1..128 个有符号 8 位显示采样点（默认 128）
+  - 支持 1..128 个有符号 16 位显示采样点（默认 128）
   - 可配置线条颜色和宽度
   - 实时波形绘制
 
@@ -145,17 +145,17 @@ python ui_designer.py
 
 ### 数据接口
 
-音频可视化只接收用于显示的紧凑结果：FFT 为 128 个 8 位幅值，PCM 为 128 个有符号 8 位采样。音频引擎内部可以使用更高精度或更大的处理帧，但应在连接 UI 前完成频带合并、降采样和定标。
+音频可视化只接收用于显示的紧凑结果：FFT 为 128 个 8 位幅值，PCM 为 128 个有符号 16 位采样。音频引擎内部可以使用更高精度或更大的处理帧，但应在连接 UI 前完成频带合并和降采样；PCM 保留 16 位以避免显示接口额外量化。
 
 ```verilog
 input wire [1023:0] fft_bins_flat;    // 128 bins * 8 bits
-input wire [1023:0] pcm_buffer_flat;  // 128 samples * signed 8 bits
+input wire [2047:0] pcm_buffer_flat;  // 128 samples * signed 16 bits
 ```
 
 #### Waveform 数据
 ```verilog
-// pcm_buffer_flat 每 8 位保存一个二进制补码采样，范围 -128..127。
-// pcm_buffer_flat[i*8 +: 8] 对应第 i 个采样点。
+// pcm_buffer_flat 每 16 位保存一个二进制补码采样，范围 -32768..32767。
+// pcm_buffer_flat[i*16 +: 16] 对应第 i 个采样点。
 ```
 
 #### Keyboard 数据
@@ -178,14 +178,14 @@ input wire [15:0] knob_value;  // 0-127 或自定义范围
 
 ```verilog
 // 声明供 UI 显示的紧凑 PCM 缓冲区
-reg signed [7:0] pcm_buffer [0:127];
-wire [1023:0] pcm_buffer_flat;
+reg signed [15:0] pcm_buffer [0:127];
+wire [2047:0] pcm_buffer_flat;
 
 // 展平数组
 genvar i;
 generate
     for (i = 0; i < 128; i = i + 1) begin : gen_pcm_flat
-        assign pcm_buffer_flat[i*8 +: 8] = pcm_buffer[i];
+        assign pcm_buffer_flat[i*16 +: 16] = pcm_buffer[i];
     end
 endgenerate
 
@@ -261,7 +261,7 @@ scene.widgets.append(KnobWidget(
 ))
 
 # 生成测试数据
-pcm_buffer = [int(120 * np.sin(2 * np.pi * i / 32)) for i in range(128)]
+pcm_buffer = [int(16000 * np.sin(2 * np.pi * i / 32)) for i in range(128)]
 key_states = [True, False, True, False, False] + [False] * 20
 
 ui_state = {

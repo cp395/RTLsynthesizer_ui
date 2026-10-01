@@ -13,7 +13,7 @@ module pixel_renderer (
     // UI State - flattened arrays
     input wire [1023:0] fft_bins_flat,    // 128 * 8 bits
     input wire [511:0] ui_state_flat,     // 32 * 16 bits
-    input wire [1023:0] pcm_buffer_flat,  // 128 * signed 8 bits
+    input wire [2047:0] pcm_buffer_flat,  // 128 * signed 16 bits
     input wire [87:0] key_states,         // 88 keys
 
     // RGB Output

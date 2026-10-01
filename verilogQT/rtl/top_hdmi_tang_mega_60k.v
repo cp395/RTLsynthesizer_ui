@@ -96,7 +96,7 @@ module top_hdmi_tang_mega_60k (
     // ========================================
     reg [31:0] frame_counter = 0;
     reg [7:0] fft_bins [0:127];
-    reg signed [7:0] pcm_buffer [0:127];
+    reg signed [15:0] pcm_buffer [0:127];
     wire [511:0] ui_state_flat;
     wire [87:0] key_states_reg;
 
@@ -183,23 +183,23 @@ module top_hdmi_tang_mega_60k (
                 fft_bins[i] <= 30 + ((frame_counter[7:0] * (i - 64)) & 8'h1F);
             end
 
-            // PCM 波形：生成 128 个有符号 8 位样本。
+            // PCM 波形：生成 128 个有符号 16 位样本。
             for (i = 0; i < 128; i = i + 1) begin
                 // 简单的正弦波近似：使用三角波
                 // 周期 = 128 样本
                 reg [6:0] phase;
-                reg signed [8:0] amplitude;
+                reg signed [16:0] amplitude;
                 phase = i[6:0];  // 取低 7 位作为相位
 
                 // 三角波近似正弦波
                 if (phase < 32)
-                    amplitude = (phase * 4);             // 上升到约 127
+                    amplitude = (phase * 1024);          // 上升到约 31744
                 else if (phase < 96)
-                    amplitude = 127 - ((phase - 32) * 4); // 下降
+                    amplitude = 32767 - ((phase - 32) * 1024); // 下降
                 else
-                    amplitude = -128 + ((phase - 96) * 4); // 负向
+                    amplitude = -32768 + ((phase - 96) * 1024); // 负向
 
-                pcm_buffer[i] <= amplitude[7:0];
+                pcm_buffer[i] <= amplitude[15:0];
             end
 
         end
@@ -212,7 +212,7 @@ module top_hdmi_tang_mega_60k (
 
     // Flatten arrays for ui_top module
     wire [1023:0] fft_bins_flat;    // 128 * 8 bits
-    wire [1023:0] pcm_buffer_flat;  // 128 * signed 8 bits
+    wire [2047:0] pcm_buffer_flat;  // 128 * signed 16 bits
 
     genvar j;
     generate
@@ -220,7 +220,7 @@ module top_hdmi_tang_mega_60k (
             assign fft_bins_flat[j*8 +: 8] = fft_bins[j];
         end
         for (j = 0; j < 128; j = j + 1) begin : gen_pcm_flat
-            assign pcm_buffer_flat[j*8 +: 8] = pcm_buffer[j];
+            assign pcm_buffer_flat[j*16 +: 16] = pcm_buffer[j];
         end
     endgenerate
 
