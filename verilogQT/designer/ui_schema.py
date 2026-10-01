@@ -8,6 +8,19 @@ from typing import List, Dict, Any, Optional
 from enum import Enum
 
 
+# Audio visualization data contracts shared by the Python preview and RTL
+# generators.  The display only needs a compact final representation; the
+# actual FFT/PCM processing belongs upstream of this UI boundary.
+FFT_BIN_COUNT = 128
+FFT_BIN_BITS = 8
+FFT_BIN_MIN = 0
+FFT_BIN_MAX = (1 << FFT_BIN_BITS) - 1
+PCM_SAMPLE_COUNT = 128
+PCM_SAMPLE_BITS = 8
+PCM_SAMPLE_MIN = -(1 << (PCM_SAMPLE_BITS - 1))
+PCM_SAMPLE_MAX = (1 << (PCM_SAMPLE_BITS - 1)) - 1
+
+
 class WidgetType(Enum):
     """控件类型"""
     PANEL = "panel"
@@ -124,7 +137,7 @@ class SpectrumWidget(Widget):
 class WaveformWidget(Widget):
     """波形控件"""
     type: str = "waveform"
-    samples: int = 1024
+    samples: int = PCM_SAMPLE_COUNT
     source: str = "pcm_buffer"
     line_color: Color = field(default_factory=lambda: Color(110, 231, 183))
     bg_color: Color = field(default_factory=lambda: Color(15, 19, 28))

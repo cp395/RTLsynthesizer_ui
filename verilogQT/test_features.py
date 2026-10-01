@@ -177,7 +177,7 @@ def test_renderer():
         ui_state = {
             "fft_bins": [int(128 + 100 * np.sin(i * 0.2)) for i in range(128)],
             "ui_state": [40000, 50000] + [32768] * 30,
-            "pcm_buffer": [int(16000 * np.sin(2 * np.pi * i / 50)) for i in range(1024)],
+            "pcm_buffer": [int(120 * np.sin(2 * np.pi * i / 50)) for i in range(128)],
             "key_states": [True, False, True, False, False] + [False] * 20,
         }
 

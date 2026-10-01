@@ -110,7 +110,7 @@ class DesignCanvas(QGraphicsView):
             widget = WaveformWidget(
                 type="waveform", name=f"waveform_{len(self.ui_scene.widgets)}",
                 x=x, y=y, width=600, height=200,
-                samples=1024,
+                samples=128,
                 source="pcm_buffer",
                 line_color=ColorRGB(110, 231, 183),
                 bg_color=ColorRGB(10, 13, 18),
@@ -490,8 +490,8 @@ class PropertyPanel(QWidget):
 
         elif widget.type == "waveform":
             samples_spin = QSpinBox()
-            # The current RTL bus contains 1024 PCM samples.
-            samples_spin.setRange(1, 1024)
+            # The compact RTL bus contains 128 signed 8-bit PCM samples.
+            samples_spin.setRange(1, 128)
             samples_spin.setValue(widget.samples)
             samples_spin.valueChanged.connect(lambda v: setattr(widget, 'samples', v))
             samples_spin.valueChanged.connect(self.on_property_changed)
@@ -845,7 +845,7 @@ class MainWindow(QMainWindow):
         ui_state[5] = 55000  # OP6
 
         # 生成 PCM 波形数据（正弦波）
-        pcm_buffer = [int(20000 * np.sin(i * 2 * np.pi / 256)) for i in range(1024)]
+        pcm_buffer = [int(120 * np.sin(i * 2 * np.pi / 128)) for i in range(128)]
 
         # 生成键盘状态（模拟按下 C、E、G 和弦）
         key_states = [0] * 128

@@ -80,7 +80,7 @@ def test_basic_preview():
     ui_state = {
         "ui_state": [40000] + [32768] * 31,  # 第一个条 ~60%
         "fft_bins": [int(100 + 80 * np.sin(i * 0.2)) for i in range(128)],
-        "pcm_buffer": [0] * 1024,
+        "pcm_buffer": [0] * 128,
         "key_states": [0] * 88
     }
 

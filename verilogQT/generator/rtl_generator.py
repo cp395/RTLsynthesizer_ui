@@ -84,7 +84,7 @@ class RTLGenerator:
             "interface": {
                 "fft_bins_flat_bits": 1024,
                 "ui_state_flat_bits": 512,
-                "pcm_buffer_flat_bits": 16384,
+                "pcm_buffer_flat_bits": 1024,
                 "key_states_bits": 88,
                 "event": {
                     "valid_bits": 1,
@@ -252,8 +252,11 @@ class RTLGenerator:
                     raise ValueError(
                         f"waveform {widget.name or '<unnamed>'} source must be pcm_buffer"
                     )
-                if not 1 <= widget.samples <= 1024:
-                    raise ValueError("Waveform samples must be between 1 and 1024 for pcm_buffer_flat")
+                if not 1 <= widget.samples <= PCM_SAMPLE_COUNT:
+                    raise ValueError(
+                        f"Waveform samples must be between 1 and {PCM_SAMPLE_COUNT} "
+                        "for pcm_buffer_flat"
+                    )
             elif isinstance(widget, KeyboardWidget) and widget.visible:
                 if widget.source not in ("key_states", "key_states_flat"):
                     raise ValueError(
@@ -690,7 +693,7 @@ class RTLGenerator:
         code.append("    // 数据输入 - 扁平化接口")
         code.append("    input wire [1023:0] fft_bins_flat,    // 128 bins * 8 bits")
         code.append("    input wire [511:0] ui_state_flat,     // 32 registers * 16 bits")
-        code.append("    input wire [16383:0] pcm_buffer_flat, // 1024 samples * 16 bits")
+        code.append("    input wire [1023:0] pcm_buffer_flat,  // 128 samples * signed 8 bits")
         code.append("    input wire [87:0] key_states,         // 88 keys max")
         code.append("    ")
         code.append("    // RGB 输出")
@@ -830,7 +833,7 @@ class RTLGenerator:
         code.append("    // UI State - flattened arrays")
         code.append("    input wire [1023:0] fft_bins_flat,    // 128 * 8 bits")
         code.append("    input wire [511:0] ui_state_flat,     // 32 * 16 bits")
-        code.append("    input wire [16383:0] pcm_buffer_flat, // 1024 * 16 bits")
+        code.append("    input wire [1023:0] pcm_buffer_flat,  // 128 * signed 8 bits")
         code.append("    input wire [87:0] key_states,")
         code.append("")
         code.append("    // RGB Output")

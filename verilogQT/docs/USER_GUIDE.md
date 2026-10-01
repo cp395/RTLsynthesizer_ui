@@ -320,25 +320,25 @@ end
     "height": 120,
     "line_color": {"r": 110, "g": 231, "b": 183},
     "bg_color": {"r": 10, "g": 13, "b": 18},
-    "source": "wave_buffer",
+    "source": "pcm_buffer",
     "layer": 1
 }
 ```
 
 **数据格式：**
 ```verilog
-// 存储最近 N 个采样点
-reg signed [15:0] wave_buffer [0:1023];
+// UI 输入是最近 128 个有符号 8 位显示采样点
+reg signed [7:0] pcm_buffer [0:127];
 ```
 
 **RTL 实现：**
 ```verilog
-// 根据 x 坐标查询采样值
-wire [9:0] sample_index = (pixel_x - X_START) * 1024 / WIDTH;
-wire signed [15:0] sample = wave_buffer[sample_index];
+// 根据 x 坐标查询 128 点缓冲区中的采样值
+wire [6:0] sample_index = (pixel_x - X_START) * 128 / WIDTH;
+wire signed [7:0] sample = pcm_buffer[sample_index];
 
 // 转换为 y 坐标
-wire [9:0] wave_y = CENTER_Y - (sample >>> 8);
+wire [9:0] wave_y = CENTER_Y - (sample >>> 1);
 
 // 判断当前像素
 wire on_wave = (pixel_y >= wave_y - 1) && 
@@ -440,20 +440,17 @@ generator.generate(scene, output_dir=Path("rtl"))
 
 ```verilog
 module ui_top (
-    input wire clk_pixel,      // 74.25 MHz
+    input wire clk,            // 74.25 MHz pixel clock
     input wire rst_n,
-    
-    // UI State Inputs
-    input wire [7:0] fft_bins [0:127],
-    input wire [15:0] ui_state [0:31],
-    
-    // HDMI Outputs
-    output wire [7:0] hdmi_r,
-    output wire [7:0] hdmi_g,
-    output wire [7:0] hdmi_b,
-    output wire hdmi_de,
-    output wire hdmi_hsync,
-    output wire hdmi_vsync
+    input wire [10:0] pixel_x,
+    input wire [9:0] pixel_y,
+    input wire [1023:0] fft_bins_flat,    // 128 bins * 8 bits
+    input wire [511:0] ui_state_flat,     // 32 registers * 16 bits
+    input wire [1023:0] pcm_buffer_flat,  // 128 signed 8-bit samples
+    input wire [87:0] key_states,
+    output wire [7:0] rgb_r,
+    output wire [7:0] rgb_g,
+    output wire [7:0] rgb_b
 );
 ```
 
@@ -483,20 +480,47 @@ module fpga_synth_top (
     );
     
     // 你的音频合成引擎
-    wire [15:0] pcm_out;
-    wire signed [15:0] pcm_samples [0:1023];
+    // 由合成引擎内部的降采样/定标逻辑驱动，供 UI 显示使用
+    wire signed [7:0] pcm_samples [0:127];
     wire [7:0] fft_bins [0:127];
+    wire [1023:0] fft_bins_flat;
+    wire [1023:0] pcm_buffer_flat;
+
+    genvar fft_i;
+    generate
+        for (fft_i = 0; fft_i < 128; fft_i = fft_i + 1) begin : gen_fft_flat
+            assign fft_bins_flat[fft_i*8 +: 8] = fft_bins[fft_i];
+        end
+    endgenerate
+
+    // 音频引擎可在内部保持更高精度；UI 接收整理后的 128 点显示数据。
+    genvar pcm_i;
+    generate
+        for (pcm_i = 0; pcm_i < 128; pcm_i = pcm_i + 1) begin : gen_pcm_flat
+            assign pcm_buffer_flat[pcm_i*8 +: 8] = pcm_samples[pcm_i];
+        end
+    endgenerate
     
     synth_engine synth (
         .clk(clk_27mhz),
         .rst_n(rst_n),
         // ... 其他接口
-        .pcm_out(pcm_out),
         .fft_bins(fft_bins)
     );
     
     // UI 状态映射
     wire [15:0] ui_state [0:31];
+    wire [511:0] ui_state_flat;
+    wire [87:0] key_states;
+    wire [10:0] pixel_x;
+    wire [9:0] pixel_y;
+    genvar state_i;
+    generate
+        for (state_i = 0; state_i < 32; state_i = state_i + 1) begin : gen_state_flat
+            assign ui_state_flat[state_i*16 +: 16] = ui_state[state_i];
+        end
+    endgenerate
+
     assign ui_state[0] = op1_level;
     assign ui_state[1] = op2_level;
     assign ui_state[2] = op3_level;
@@ -509,16 +533,17 @@ module fpga_synth_top (
     
     // UI 模块
     ui_top ui (
-        .clk_pixel(clk_pixel),
+        .clk(clk_pixel),
         .rst_n(rst_n),
-        .fft_bins(fft_bins),
-        .ui_state(ui_state),
-        .hdmi_r(hdmi_r),
-        .hdmi_g(hdmi_g),
-        .hdmi_b(hdmi_b),
-        .hdmi_de(hdmi_de),
-        .hdmi_hsync(hdmi_hsync),
-        .hdmi_vsync(hdmi_vsync)
+        .pixel_x(pixel_x),
+        .pixel_y(pixel_y),
+        .fft_bins_flat(fft_bins_flat),
+        .ui_state_flat(ui_state_flat),
+        .pcm_buffer_flat(pcm_buffer_flat),
+        .key_states(key_states),
+        .rgb_r(hdmi_r),
+        .rgb_g(hdmi_g),
+        .rgb_b(hdmi_b)
     );
 
 endmodule

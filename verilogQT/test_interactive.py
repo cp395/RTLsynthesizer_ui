@@ -147,7 +147,7 @@ def create_test_scene():
         name="waveform",
         x=460, y=345, width=360, height=120,
         source="pcm_buffer",
-        samples=1024,
+        samples=128,
         line_color=ColorRGB(110, 231, 183),
         bg_color=ColorRGB(10, 12, 18),
         line_width=2

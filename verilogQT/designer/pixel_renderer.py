@@ -314,16 +314,26 @@ class PixelRenderer:
         center_y = (y1 + y2) // 2
         half_height = widget.height // 2
 
-        num_samples = min(len(pcm_data), widget.width)
+        # Always span the widget width.  The compact 128-sample buffer is
+        # intentionally resampled across a wider waveform panel.  Honour a
+        # smaller widget.samples value just like the RTL SAMPLES parameter.
+        num_samples = max(1, widget.width)
+        source_count = max(1, min(len(pcm_data), widget.samples))
+        source_last = source_count - 1
+        pixel_last = max(1, num_samples - 1)
 
         for i in range(num_samples - 1):
-            # 从 PCM 数据获取样本 (假设 -32768 到 32767)
-            sample1 = pcm_data[i * len(pcm_data) // num_samples]
-            sample2 = pcm_data[(i + 1) * len(pcm_data) // num_samples]
+            # PCM 数据是有符号 8 位样本（-128..127）。
+            source_i = min(source_last, (i * source_last) // pixel_last)
+            source_next = min(source_last, ((i + 1) * source_last) // pixel_last)
+            sample1 = max(PCM_SAMPLE_MIN, min(PCM_SAMPLE_MAX,
+                                              pcm_data[source_i]))
+            sample2 = max(PCM_SAMPLE_MIN, min(PCM_SAMPLE_MAX,
+                                              pcm_data[source_next]))
 
             # 转换为屏幕坐标
-            y_sample1 = center_y - (sample1 * half_height) // 32768
-            y_sample2 = center_y - (sample2 * half_height) // 32768
+            y_sample1 = center_y - (sample1 * half_height) // 128
+            y_sample2 = center_y - (sample2 * half_height) // 128
 
             # 裁剪
             y_sample1 = max(y1, min(y2 - 1, y_sample1))

@@ -8,6 +8,25 @@
 import numpy as np
 from typing import Dict, Any
 
+try:
+    from .ui_schema import (
+        FFT_BIN_COUNT,
+        FFT_BIN_MIN,
+        FFT_BIN_MAX,
+        PCM_SAMPLE_COUNT,
+        PCM_SAMPLE_MIN,
+        PCM_SAMPLE_MAX,
+    )
+except ImportError:
+    from ui_schema import (
+        FFT_BIN_COUNT,
+        FFT_BIN_MIN,
+        FFT_BIN_MAX,
+        PCM_SAMPLE_COUNT,
+        PCM_SAMPLE_MIN,
+        PCM_SAMPLE_MAX,
+    )
+
 
 class InteractiveState:
     """管理可交互的 UI 状态"""
@@ -21,11 +40,11 @@ class InteractiveState:
         # MIDI 音高状态 (0..127)。这不是物理键盘数量；控件只显示选定窗口。
         self.key_states = [0] * 128
 
-        # 频谱数据（128 bins，用于 FFT 可视化）
-        self.fft_bins = [0] * 128
+        # 频谱数据（128 个 8 位 bins，用于 FFT 可视化）
+        self.fft_bins = [0] * FFT_BIN_COUNT
 
-        # 波形数据（1024 采样点，用于示波器）
-        self.pcm_buffer = [0] * 1024
+        # 波形数据（128 个有符号 8 位采样点，用于示波器）
+        self.pcm_buffer = [0] * PCM_SAMPLE_COUNT
 
         # 动画计数器
         self.frame_count = 0
@@ -144,15 +163,19 @@ class InteractiveState:
 
         # 模拟频谱动画（衰减的振荡）
         self.fft_bins = [
-            int(50 + 80 * np.sin(i * 0.1 + t) * np.exp(-i * 0.01))
-            for i in range(128)
+            max(FFT_BIN_MIN, min(FFT_BIN_MAX, int(
+                50 + 80 * np.sin(i * 0.1 + t) * np.exp(-i * 0.01)
+            )))
+            for i in range(FFT_BIN_COUNT)
         ]
 
         # 模拟波形（正弦波 + 谐波）
         self.pcm_buffer = [
-            int(15000 * np.sin(i * 0.02 + t) +
-                5000 * np.sin(i * 0.06 + t * 1.5))
-            for i in range(1024)
+            max(PCM_SAMPLE_MIN, min(PCM_SAMPLE_MAX, int(
+                96 * np.sin(i * 0.02 + t) +
+                24 * np.sin(i * 0.06 + t * 1.5)
+            )))
+            for i in range(PCM_SAMPLE_COUNT)
         ]
 
     def to_dict(self) -> Dict[str, Any]:

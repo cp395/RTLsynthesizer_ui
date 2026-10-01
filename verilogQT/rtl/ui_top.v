@@ -15,7 +15,7 @@ module ui_top (
     // 数据输入 - 扁平化接口
     input wire [1023:0] fft_bins_flat,    // 128 bins * 8 bits
     input wire [511:0] ui_state_flat,     // 32 registers * 16 bits
-    input wire [16383:0] pcm_buffer_flat, // 1024 samples * 16 bits
+    input wire [1023:0] pcm_buffer_flat,  // 128 samples * signed 8 bits
     input wire [87:0] key_states,         // 88 keys max
 
     // RGB 输出

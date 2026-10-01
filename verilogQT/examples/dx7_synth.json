@@ -316,7 +316,7 @@
       "y": 450,
       "width": 710,
       "height": 130,
-      "samples": 1024,
+      "samples": 128,
       "source": "pcm_buffer",
       "line_color": {"r": 110, "g": 231, "b": 183},
       "bg_color": {"r": 10, "g": 13, "b": 18},

@@ -134,7 +134,7 @@ def load_scene_from_json(json_path: Path) -> UIScene:
                 y=w_data.get("y", 0),
                 width=w_data.get("width", 600),
                 height=w_data.get("height", 200),
-                samples=w_data.get("samples", 1024),
+                samples=w_data.get("samples", 128),
                 source=w_data.get("source", "pcm_buffer"),
                 line_width=w_data.get("line_width", 2),
                 name=w_data.get("name", ""),

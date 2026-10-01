@@ -9,24 +9,24 @@ module waveform_renderer #(
     parameter Y_START = 0,
     parameter WIDTH = 600,
     parameter HEIGHT = 200,
-    parameter SAMPLES = 1024,
+    parameter SAMPLES = 128,
     parameter LINE_COLOR = 24'h6EE7B7,
     parameter BG_COLOR = 24'h0A0D12
 ) (
     input wire clk,
     input wire [10:0] pixel_x,
     input wire [9:0] pixel_y,
-    input wire [16383:0] pcm_buffer_flat,  // 1024 samples * 16 bits
+    input wire [1023:0] pcm_buffer_flat,   // 128 samples * signed 8 bits
     output wire active,
     output wire [23:0] color
 );
 
     // 解包 PCM buffer
-    wire signed [15:0] pcm_samples [0:1023];
+    wire signed [7:0] pcm_samples [0:127];
     genvar i;
     generate
-        for (i = 0; i < 1024; i = i + 1) begin : gen_pcm
-            assign pcm_samples[i] = pcm_buffer_flat[i*16 +: 16];
+        for (i = 0; i < 128; i = i + 1) begin : gen_pcm
+            assign pcm_samples[i] = pcm_buffer_flat[i*8 +: 8];
         end
     endgenerate
 
@@ -50,14 +50,14 @@ module waveform_renderer #(
     wire [10:0] sample_idx = sample_idx_fp >> INDEX_FRAC_BITS;
 
     // 获取当前样本值
-    wire signed [15:0] current_sample = (sample_idx < SAMPLES) ?
-                                        pcm_samples[sample_idx] : 16'sd0;
+    wire signed [7:0] current_sample = (sample_idx < SAMPLES) ?
+                                       pcm_samples[sample_idx] : 8'sd0;
 
-    // 将样本值映射到 Y 坐标 (-32768~32767 -> -HALF_HEIGHT~HALF_HEIGHT)
-    // 32768 is 2^15, so use an arithmetic shift instead of a divider.
+    // 将样本值映射到 Y 坐标 (-128..127 -> -HALF_HEIGHT..HALF_HEIGHT)。
+    // 128 is 2^7, so use an arithmetic shift instead of a divider.
     wire signed [31:0] sample_scaled = current_sample * HALF_HEIGHT;
     wire signed [31:0] y_offset_calc =
-        (sample_scaled + (sample_scaled[31] ? 32'sd32767 : 32'sd0)) >>> 15;
+        (sample_scaled + (sample_scaled[31] ? 32'sd127 : 32'sd0)) >>> 7;
     wire signed [15:0] y_offset = y_offset_calc[15:0];
     wire [9:0] waveform_y = CENTER_Y - y_offset;
 

@@ -208,7 +208,7 @@ testbench/ (测试验证)
   note (8-bit)       ────► ui_state[7]
 
   fft_bins[0:127]    ────► Spectrum 控件
-  pcm_samples[0:1023]────► Waveform 控件
+  pcm_samples[0:127] ────► Waveform 控件
   key_states[0:127]  ────► Keyboard 控件
 
 只需要映射你的状态信号，UI 自动实时更新！

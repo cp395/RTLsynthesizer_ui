@@ -19,7 +19,7 @@
 - **Python 渲染**: ✅ 完整实现
 - **RTL 模块**: ✅ `rtl/waveform_renderer.v`
 - **特性**: 
-  - 支持任意采样数（默认 1024）
+  - 支持 1..128 个有符号 8 位显示采样点（默认 128）
   - 可配置线条颜色和宽度
   - 实时波形绘制
 
@@ -90,7 +90,7 @@ python ui_designer.py
   "y": 450,
   "width": 710,
   "height": 130,
-  "samples": 1024,
+  "samples": 128,
   "source": "pcm_buffer",
   "line_color": {"r": 110, "g": 231, "b": 183},
   "bg_color": {"r": 10, "g": 13, "b": 18},
@@ -145,13 +145,17 @@ python ui_designer.py
 
 ### 数据接口
 
+音频可视化只接收用于显示的紧凑结果：FFT 为 128 个 8 位幅值，PCM 为 128 个有符号 8 位采样。音频引擎内部可以使用更高精度或更大的处理帧，但应在连接 UI 前完成频带合并、降采样和定标。
+
+```verilog
+input wire [1023:0] fft_bins_flat;    // 128 bins * 8 bits
+input wire [1023:0] pcm_buffer_flat;  // 128 samples * signed 8 bits
+```
+
 #### Waveform 数据
 ```verilog
-// 在顶层模块
-input wire [16383:0] pcm_buffer_flat;  // 1024 samples * 16 bits
-
-// PCM 数据是有符号 16 位采样
-// -32768 到 +32767
+// pcm_buffer_flat 每 8 位保存一个二进制补码采样，范围 -128..127。
+// pcm_buffer_flat[i*8 +: 8] 对应第 i 个采样点。
 ```
 
 #### Keyboard 数据
@@ -173,15 +177,15 @@ input wire [15:0] knob_value;  // 0-127 或自定义范围
 ### 在顶层模块中连接
 
 ```verilog
-// 声明 PCM 缓冲区
-reg signed [15:0] pcm_buffer [0:1023];
-wire [16383:0] pcm_buffer_flat;
+// 声明供 UI 显示的紧凑 PCM 缓冲区
+reg signed [7:0] pcm_buffer [0:127];
+wire [1023:0] pcm_buffer_flat;
 
 // 展平数组
 genvar i;
 generate
-    for (i = 0; i < 1024; i = i + 1) begin : gen_pcm_flat
-        assign pcm_buffer_flat[i*16 +: 16] = pcm_buffer[i];
+    for (i = 0; i < 128; i = i + 1) begin : gen_pcm_flat
+        assign pcm_buffer_flat[i*8 +: 8] = pcm_buffer[i];
     end
 endgenerate
 
@@ -226,7 +230,7 @@ scene.widgets.append(WaveformWidget(
     type="waveform",
     name="waveform1",
     x=50, y=100, width=600, height=200,
-    samples=1024,
+    samples=128,
     source="pcm_buffer",
     line_color=ColorRGB(110, 231, 183),
     bg_color=ColorRGB(10, 13, 18)
@@ -257,7 +261,7 @@ scene.widgets.append(KnobWidget(
 ))
 
 # 生成测试数据
-pcm_buffer = [int(16000 * np.sin(2 * np.pi * i / 100)) for i in range(1024)]
+pcm_buffer = [int(120 * np.sin(2 * np.pi * i / 32)) for i in range(128)]
 key_states = [True, False, True, False, False] + [False] * 20
 
 ui_state = {
