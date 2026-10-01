@@ -36,16 +36,12 @@ module spectrum_renderer #(
     wire in_x = (pixel_x >= X_START) && (pixel_x < X_START + WIDTH);
     wire in_y = (pixel_y >= Y_START) && (pixel_y < Y_START + HEIGHT);
 
-    // Determine which bar. BAR_WIDTH is constant for this widget, so use a
-    // fixed-point reciprocal rather than inferring a divider on every pixel.
+    // Determine which bar. The default 64-bar scene has nine-pixel bars;
+    // a small constant divider is considerably cheaper than a wide fixed-
+    // point multiplier chain.
     wire [10:0] local_x = pixel_x - X_START;
     wire [9:0] local_y = pixel_y - Y_START;
-    localparam integer BAR_INDEX_FRAC_BITS = 24;
-    localparam [31:0] BAR_INDEX_STEP_Q = (BAR_WIDTH > 0) ?
-                                         (((32'd1 << BAR_INDEX_FRAC_BITS) + BAR_WIDTH - 1) / BAR_WIDTH) : 0;
-    // Keep the full product when a custom scene uses one-pixel bars.
-    wire [34:0] bar_index_fp = {24'd0, local_x} * {3'd0, BAR_INDEX_STEP_Q};
-    wire [7:0] bar_index = bar_index_fp >> BAR_INDEX_FRAC_BITS;
+    wire [7:0] bar_index = (BAR_WIDTH > 0) ? (local_x / BAR_WIDTH) : 8'd0;
 
     // Get bar height from FFT bins
     wire [7:0] bin_value = (bar_index < NUM_BARS) ? fft_bins[bar_index] : 8'd0;
@@ -53,12 +49,33 @@ module spectrum_renderer #(
     // Scale to screen height: bar_height = (bin_value * HEIGHT) >> 8.
     // Keep the full product so custom widgets taller than 257 pixels do not
     // wrap when the intermediate value exceeds 16 bits.
-    wire [31:0] mult = {24'd0, bin_value} * HEIGHT;
+    wire [31:0] mult;
+    generate
+        if (HEIGHT == 200) begin : gen_default_height_scale
+            // 200 = 128 + 64 + 8; avoid a DSP for the default scene.
+            assign mult = ({24'd0, bin_value} << 7) +
+                          ({24'd0, bin_value} << 6) +
+                          ({24'd0, bin_value} << 3);
+        end else if (HEIGHT == 240) begin : gen_240px_height_scale
+            assign mult = ({24'd0, bin_value} << 8) -
+                          ({24'd0, bin_value} << 4);
+        end else begin : gen_generic_height_scale
+            assign mult = {24'd0, bin_value} * HEIGHT;
+        end
+    endgenerate
     wire [15:0] bar_height_scaled = mult >> 8;
     wire [15:0] bar_height = (bar_height_scaled > HEIGHT) ? HEIGHT : bar_height_scaled;
 
     // Check if in bar or gap
-    wire [10:0] bar_local_x = local_x - (bar_index * BAR_WIDTH);
+    wire [10:0] bar_offset;
+    generate
+        if (BAR_WIDTH == 9) begin : gen_default_bar_offset
+            assign bar_offset = (bar_index << 3) + bar_index;
+        end else begin : gen_generic_bar_offset
+            assign bar_offset = bar_index * BAR_WIDTH;
+        end
+    endgenerate
+    wire [10:0] bar_local_x = local_x - bar_offset;
     wire in_bar = bar_local_x < ACTUAL_BAR_WIDTH;
 
     // Check if pixel is in filled region

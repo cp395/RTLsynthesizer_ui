@@ -38,16 +38,18 @@ module waveform_renderer #(
     localparam CENTER_Y = Y_START + (HEIGHT / 2);
     localparam HALF_HEIGHT = HEIGHT / 2;
 
-    // 当前 X 位置对应的样本索引。WIDTH/SAMPLES are elaboration-time
-    // constants, so avoid inferring a divider on the pixel path.
+    // 当前 X 位置对应的样本索引。128 点场景只需要 7 位左移；保留
+    // 通用分支供其它采样数使用，避免在默认像素路径上生成宽乘法器。
     wire [10:0] local_x = pixel_x - X_START;
-    localparam integer INDEX_FRAC_BITS = 34;
-    localparam [63:0] SAMPLE_STEP_Q = (WIDTH > 0) ?
-                                      ((((64'd1 << INDEX_FRAC_BITS) * SAMPLES) + WIDTH - 1) / WIDTH) : 0;
-    // Explicitly widen local_x before multiplication; Verilog otherwise
-    // sizes a multiply from its operands rather than the destination wire.
-    wire [63:0] sample_idx_fp = {53'd0, local_x} * SAMPLE_STEP_Q;
-    wire [10:0] sample_idx = sample_idx_fp >> INDEX_FRAC_BITS;
+    wire [10:0] sample_idx;
+    generate
+        if (SAMPLES == 128) begin : gen_default_sample_index
+            wire [17:0] sample_idx_scaled = {local_x, 7'd0};
+            assign sample_idx = (WIDTH > 0) ? (sample_idx_scaled / WIDTH) : 11'd0;
+        end else begin : gen_generic_sample_index
+            assign sample_idx = (WIDTH > 0) ? ((local_x * SAMPLES) / WIDTH) : 11'd0;
+        end
+    endgenerate
 
     // 获取当前样本值
     wire signed [15:0] current_sample = (sample_idx < SAMPLES) ?
@@ -55,7 +57,24 @@ module waveform_renderer #(
 
     // 将样本值映射到 Y 坐标 (-32768..32767 -> -HALF_HEIGHT..HALF_HEIGHT)。
     // 32768 is 2^15, so use an arithmetic shift instead of a divider.
-    wire signed [31:0] sample_scaled = current_sample * HALF_HEIGHT;
+    wire signed [31:0] current_sample_ext = {{16{current_sample[15]}}, current_sample};
+    wire signed [31:0] sample_scaled;
+    generate
+        if (HALF_HEIGHT == 75) begin : gen_default_sample_scale
+            // 75 = 64 + 8 + 2 + 1; avoid a DSP for the default 150-pixel
+            // waveform widget.
+            assign sample_scaled = (current_sample_ext <<< 6) +
+                                   (current_sample_ext <<< 3) +
+                                   (current_sample_ext <<< 1) +
+                                   current_sample_ext;
+        end else if (HALF_HEIGHT == 100) begin : gen_200px_sample_scale
+            assign sample_scaled = (current_sample_ext <<< 6) +
+                                   (current_sample_ext <<< 5) +
+                                   (current_sample_ext <<< 2);
+        end else begin : gen_generic_sample_scale
+            assign sample_scaled = current_sample * HALF_HEIGHT;
+        end
+    endgenerate
     wire signed [31:0] y_offset_calc =
         (sample_scaled + (sample_scaled[31] ? 32'sd32767 : 32'sd0)) >>> 15;
     wire signed [15:0] y_offset = y_offset_calc[15:0];
