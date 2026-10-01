@@ -9,6 +9,7 @@ set_device -name $FPGA_DEVICE_NAME $FPGA_PART -device_version $FPGA_DEVICE_VERSI
 
 # Add design files
 add_file -type verilog rtl/top_hdmi_tang_mega_60k.v
+add_file -type verilog rtl/audio_synth_48k.v
 add_file -type verilog [file join $BOARD_CONFIG_DIR $PLL_SOURCE_FILE]
 add_file -type verilog rtl/ui_top.v
 add_file -type verilog rtl/pixel_renderer.v

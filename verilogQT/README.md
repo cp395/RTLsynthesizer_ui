@@ -27,6 +27,10 @@ python -m venv .venv
 - `rtl/`：生成器使用的 FPGA 渲染与事件接口模板。
 - `testbench/`：Python 渲染测试和交互 RTL 测试台。
 
+### FPGA 内部动态频谱源
+
+`rtl/audio_synth_48k.v` 在 FPGA 内部使用像素时钟产生约 48 kHz 的采样使能，合成可重复的三角波测试音频，并以双缓冲保存 128 个有符号 16 位 PCM 样本。每个窗口计算 32 个低频 DFT 频点，输出到现有的 `fft_bins_flat[1023:0]`（其余频点补零）和 `pcm_buffer_flat[2047:0]` 接口，因此无需外部 PCM 数据即可驱动屏幕上的动态波形和频谱。该模块是演示/联调信号源，不代表真实音频输入链路。
+
 编辑器可以保存和打开 JSON。`Preview` 支持拖动旋钮、鼠标或电脑键盘弹奏琴键，以及按 JSON 规则执行 `click`、`press`、`release`、`change`、`key_down` 和 `key_up` 动作。`Interactions` 用于编辑规则 JSON。
 
 `Generate RTL` 每次固定只生成 **1 个 Verilog 文件**：`ui_generated_scene.v`。把它覆盖到 FPGA 工程 `rtl/ui_generated_scene.v` 后直接重新编译；顶层、PLL、视频时序、TMDS 和其它业务 RTL 均不需要修改。另生成 `generated_manifest.json` 说明接口，但它不参与 Gowin 工程。

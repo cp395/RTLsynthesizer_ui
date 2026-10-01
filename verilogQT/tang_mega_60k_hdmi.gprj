@@ -13,6 +13,7 @@
     <Device name="GW5AT-60" pn="GW5AT-LV60PG484A">gw5at60k-011</Device>
     <FileList>
         <File path="rtl/top_hdmi_tang_mega_60k.v" type="file.verilog" enable="1"/>
+        <File path="rtl/audio_synth_48k.v" type="file.verilog" enable="1"/>
         <File path="rtl/Gowin_rPLL.v" type="file.verilog" enable="1"/>
         <File path="rtl/hdmi_timing.v" type="file.verilog" enable="1"/>
         <File path="rtl/adv7513_controller.v" type="file.verilog" enable="1"/>

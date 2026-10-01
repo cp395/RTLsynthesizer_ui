@@ -267,6 +267,7 @@ def main():
     print("--- 检查关键文件 ---")
     files_to_check = [
         (base_dir / "rtl/top_hdmi_tang_mega_60k.v", "顶层模块"),
+        (base_dir / "rtl/audio_synth_48k.v", "48 kHz 内部音频源"),
         (base_dir / "rtl/ui_top.v", "UI 顶层"),
         (base_dir / "rtl/pixel_renderer.v", "像素渲染器"),
         (base_dir / "rtl/hdmi_timing.v", "HDMI 时序"),

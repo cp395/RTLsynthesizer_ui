@@ -92,11 +92,12 @@ module top_hdmi_tang_mega_60k (
     );
 
     // ========================================
-    // 测试数据生成器
+    // FPGA 内部 48 kHz 音频源与频谱分析器
     // ========================================
     reg [31:0] frame_counter = 0;
-    reg [7:0] fft_bins [0:127];
-    reg signed [15:0] pcm_buffer [0:127];
+    wire sample_tick_48k;
+    wire [1023:0] fft_bins_flat;
+    wire [2047:0] pcm_buffer_flat;
     wire [511:0] ui_state_flat;
     wire [87:0] key_states_reg;
 
@@ -137,7 +138,8 @@ module top_hdmi_tang_mega_60k (
     );
 
     // Synchronize the I2C controller's completion flag back to the pixel
-    // clock before it gates the generated demo data.
+    // clock for status indication. Audio generation is independent of HDMI
+    // transmitter initialization, so the spectrum is available immediately.
     reg [1:0] adv_init_sync = 0;
     wire adv7513_init_done_pixel = adv_init_sync[1];
     always @(posedge clk_pixel or negedge sys_rst_n) begin
@@ -162,67 +164,18 @@ module top_hdmi_tang_mega_60k (
         end
     end
 
-    // 生成动画测试数据
-    integer i;
-    always @(posedge clk_pixel) begin
-        if (!sys_rst_n) begin
-            for (i = 0; i < 128; i = i + 1)
-                fft_bins[i] <= 0;
-            for (i = 0; i < 128; i = i + 1)
-                pcm_buffer[i] <= 0;
-        end else if (frame_tick && adv7513_init_done_pixel) begin
-            // FFT 频谱：模拟音频
-            for (i = 0; i < 64; i = i + 1) begin
-                // 低频较强，带有动画效果
-                // Keep the demo magnitude inside the unsigned 8-bit contract.
-                fft_bins[i] <= (180 >> (i[5:4])) +
-                               ((frame_counter[8:1] * (i + 1)) & 8'h3F) + 12;
-            end
-            for (i = 64; i < 128; i = i + 1) begin
-                // 高频较弱
-                fft_bins[i] <= 30 + ((frame_counter[7:0] * (i - 64)) & 8'h1F);
-            end
-
-            // PCM 波形：生成 128 个有符号 16 位样本。
-            for (i = 0; i < 128; i = i + 1) begin
-                // 简单的正弦波近似：使用三角波
-                // 周期 = 128 样本
-                reg [6:0] phase;
-                reg signed [16:0] amplitude;
-                phase = i[6:0];  // 取低 7 位作为相位
-
-                // 三角波近似正弦波
-                if (phase < 32)
-                    amplitude = (phase * 1024);          // 上升到约 31744
-                else if (phase < 96)
-                    amplitude = 32767 - ((phase - 32) * 1024); // 下降
-                else
-                    amplitude = -32768 + ((phase - 96) * 1024); // 负向
-
-                pcm_buffer[i] <= amplitude[15:0];
-            end
-
-        end
-    end
+    audio_synth_48k audio_source (
+        .clk(clk_pixel),
+        .rst_n(sys_rst_n),
+        .sample_tick(sample_tick_48k),
+        .fft_bins_flat(fft_bins_flat),
+        .pcm_buffer_flat(pcm_buffer_flat)
+    );
 
     // ========================================
     // UI 渲染模块
     // ========================================
     wire [7:0] ui_r, ui_g, ui_b;
-
-    // Flatten arrays for ui_top module
-    wire [1023:0] fft_bins_flat;    // 128 * 8 bits
-    wire [2047:0] pcm_buffer_flat;  // 128 * signed 16 bits
-
-    genvar j;
-    generate
-        for (j = 0; j < 128; j = j + 1) begin : gen_fft_flat
-            assign fft_bins_flat[j*8 +: 8] = fft_bins[j];
-        end
-        for (j = 0; j < 128; j = j + 1) begin : gen_pcm_flat
-            assign pcm_buffer_flat[j*16 +: 16] = pcm_buffer[j];
-        end
-    endgenerate
 
     ui_top ui_renderer (
         .clk(clk_pixel),
