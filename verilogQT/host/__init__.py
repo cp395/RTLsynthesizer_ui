@@ -1,0 +1,48 @@
+"""PC-side transport helpers for the VerilogQT UI protocol."""
+
+from .uart_protocol import (
+    EVENT_PAYLOAD_SIZE,
+    FRAME_OVERHEAD,
+    MAX_PAYLOAD,
+    PROTOCOL_VERSION,
+    SOF,
+    EventMessage,
+    Frame,
+    FrameParser,
+    MessageType,
+    ProtocolError,
+    SceneAssembler,
+    decode_event,
+    decode_frame,
+    decode_scene_json,
+    encode_event,
+    encode_frame,
+    encode_scene_frames,
+    scene_to_json,
+)
+from .ui_host import SerialTransport, UIHost, build_arg_parser, main
+
+__all__ = [
+    "EVENT_PAYLOAD_SIZE",
+    "FRAME_OVERHEAD",
+    "MAX_PAYLOAD",
+    "PROTOCOL_VERSION",
+    "SOF",
+    "EventMessage",
+    "Frame",
+    "FrameParser",
+    "MessageType",
+    "ProtocolError",
+    "SceneAssembler",
+    "decode_event",
+    "decode_frame",
+    "decode_scene_json",
+    "encode_event",
+    "encode_frame",
+    "encode_scene_frames",
+    "scene_to_json",
+    "SerialTransport",
+    "UIHost",
+    "build_arg_parser",
+    "main",
+]
